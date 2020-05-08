@@ -1,0 +1,210 @@
+{
+    "input": [
+        {
+            "name": "statusId"
+        },
+        {
+            "name": "trackerId"
+        }
+    ],
+    "output": [
+        {
+            "name": "APIException",
+            "type": "model",
+            "reference": "io.toro.martini.api.APIException"
+        },
+        {
+            "name": "orderStatus",
+            "type": "model",
+            "reference": "model.OrderStatus"
+        },
+        {
+            "name": "responseCode",
+            "type": "integer",
+            "defaultValue": 200
+        }
+    ],
+    "steps": [
+        {
+            "type": "block",
+            "blockType": "TRY_CATCH",
+            "children": [
+                {
+                    "type": "invokeGloop",
+                    "name": "sql.orderTracker.status.SelectOrderStatus",
+                    "inputs": [
+                        {
+                            "from": [
+                                "statusId"
+                            ],
+                            "to": [
+                                "selectOrderStatusInput",
+                                "statusId"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "trackerId"
+                            ],
+                            "to": [
+                                "selectOrderStatusInput",
+                                "trackerId"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "from": [
+                                "selectOrderStatusOutput",
+                                "STATUS_ID"
+                            ],
+                            "to": [
+                                "orderStatus",
+                                "status_id"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "selectOrderStatusOutput",
+                                "TRACKER_ID"
+                            ],
+                            "to": [
+                                "orderStatus",
+                                "tracker_id"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "selectOrderStatusOutput",
+                                "STATUS"
+                            ],
+                            "to": [
+                                "orderStatus",
+                                "status"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "selectOrderStatusOutput",
+                                "LOCATION"
+                            ],
+                            "to": [
+                                "orderStatus",
+                                "location"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "selectOrderStatusOutput",
+                                "NOTES"
+                            ],
+                            "to": [
+                                "orderStatus",
+                                "notes"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "selectOrderStatusOutput",
+                                "DATE"
+                            ],
+                            "to": [
+                                "orderStatus",
+                                "date"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "fork",
+                    "expression": "orderStatus?.status_id",
+                    "children": [
+                        {
+                            "label": "$null",
+                            "lines": [
+                                {
+                                    "type": "set",
+                                    "expression": "404",
+                                    "to": [
+                                        "responseCode"
+                                    ]
+                                },
+                                {
+                                    "type": "set",
+                                    "expression": "\"Order Status with id ${statusId} not found.\"",
+                                    "evaluate": true,
+                                    "to": [
+                                        "APIException",
+                                        "message"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "catch": [
+                {
+                    "lines": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "message"
+                            ],
+                            "to": [
+                                "APIException",
+                                "message"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "APIException",
+                                "payload"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "500",
+                            "to": [
+                                "responseCode"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "invokeCode",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "error",
+                    "parameters": [
+                        "java.lang.String",
+                        "java.lang.Throwable"
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "message"
+                            ],
+                            "to": [
+                                "message"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "throwable"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

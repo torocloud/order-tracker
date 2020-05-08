@@ -1,0 +1,52 @@
+{
+    "type": "customSql",
+    "input": [
+        {
+            "name": "insertOrderStatusInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "$getGeneratedKeys",
+                    "type": "boolean",
+                    "defaultValue": false
+                },
+                {
+                    "name": "statusId"
+                },
+                {
+                    "name": "trackerId"
+                },
+                {
+                    "name": "status"
+                },
+                {
+                    "name": "location"
+                },
+                {
+                    "name": "notes"
+                },
+                {
+                    "name": "date",
+                    "type": "date"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "updateCount",
+            "type": "integer"
+        },
+        {
+            "name": "generatedKeys",
+            "type": "model",
+            "allowExtraProperties": true
+        }
+    ],
+    "connectionPoolName": "order-tracker",
+    "sqlType": "INSERT",
+    "query": "INSERT INTO \"ORDER_STATUS\" (\n    \"STATUS_ID\",\n    \"TRACKER_ID\",\n    \"STATUS\",\n    \"LOCATION\",\n    \"NOTES\",\n    \"DATE\"\n)\nVALUES (\n    :statusId,\n    :trackerId,\n    :status,\n    :location,\n    :notes,\n    :date\n)"
+}

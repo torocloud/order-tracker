@@ -1,0 +1,7 @@
+<package stateOnStartup="started" id="order-tracker" version="1.0.0" context-path="/order-tracker">
+  <package-dependencies/>
+  <startup-services>
+    <startup-service>gloop:conf.SetupDatabase/conf.SetupDatabase</startup-service>
+  </startup-services>
+  <shutdown-services/>
+</package>

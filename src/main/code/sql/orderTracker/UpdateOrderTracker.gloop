@@ -1,0 +1,32 @@
+{
+    "type": "customSql",
+    "input": [
+        {
+            "name": "updateOrderTrackerInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "order"
+                },
+                {
+                    "name": "shipTo"
+                },
+                {
+                    "name": "trackerId"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "updateCount",
+            "type": "integer"
+        }
+    ],
+    "connectionPoolName": "order-tracker",
+    "sqlType": "UPDATE",
+    "query": "UPDATE \"ORDER_TRACKER\"\nSET\n    \"ORDER\" = COALESCE(:order, \"ORDER\"),\n    \"SHIP_TO\" = COALESCE(:shipTo, \"SHIP_TO\")\nWHERE (\n    \"TRACKER_ID\" = :trackerId\n)"
+}

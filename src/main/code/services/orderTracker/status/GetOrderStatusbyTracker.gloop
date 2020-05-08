@@ -1,0 +1,241 @@
+{
+    "input": [
+        {
+            "name": "trackerId"
+        }
+    ],
+    "output": [
+        {
+            "name": "APIException",
+            "type": "model",
+            "reference": "io.toro.martini.api.APIException"
+        },
+        {
+            "name": "orderStatus",
+            "type": "model",
+            "array": true,
+            "reference": "model.OrderStatus"
+        },
+        {
+            "name": "responseCode",
+            "type": "integer",
+            "defaultValue": 200
+        }
+    ],
+    "steps": [
+        {
+            "type": "block",
+            "blockType": "TRY_CATCH",
+            "children": [
+                {
+                    "type": "invokeGloop",
+                    "name": "sql.orderTracker.status.SelectOrderStatusByTracker",
+                    "declare": [
+                        {
+                            "variables": [
+                                {
+                                    "name": "selectOrderStatusByTrackerInputCursor",
+                                    "type": "model",
+                                    "array": true,
+                                    "gloopProperties": [
+                                        {
+                                            "name": "STATUS_ID",
+                                            "required": true,
+                                            "allowNull": false
+                                        },
+                                        {
+                                            "name": "TRACKER_ID",
+                                            "required": true,
+                                            "allowNull": false
+                                        },
+                                        {
+                                            "name": "STATUS",
+                                            "required": true,
+                                            "allowNull": false
+                                        },
+                                        {
+                                            "name": "LOCATION",
+                                            "required": true
+                                        },
+                                        {
+                                            "name": "NOTES",
+                                            "required": true
+                                        },
+                                        {
+                                            "name": "DATE",
+                                            "type": "date",
+                                            "required": true,
+                                            "allowNull": false
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "trackerId"
+                            ],
+                            "to": [
+                                "selectOrderStatusByTrackerInput",
+                                "trackerId"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "from": [
+                                "selectOrderStatusByTrackerInputCursor"
+                            ],
+                            "to": [
+                                "selectOrderStatusByTrackerInputCursor"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "iterate",
+                    "input": {
+                        "path": [
+                            "selectOrderStatusByTrackerInputCursor"
+                        ]
+                    },
+                    "output": {
+                        "path": [
+                            "orderStatus"
+                        ]
+                    },
+                    "children": [
+                        {
+                            "lines": [
+                                {
+                                    "from": [
+                                        "selectOrderStatusByTrackerInputCursor",
+                                        "STATUS_ID"
+                                    ],
+                                    "to": [
+                                        "orderStatus",
+                                        "status_id"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "selectOrderStatusByTrackerInputCursor",
+                                        "TRACKER_ID"
+                                    ],
+                                    "to": [
+                                        "orderStatus",
+                                        "tracker_id"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "selectOrderStatusByTrackerInputCursor",
+                                        "STATUS"
+                                    ],
+                                    "to": [
+                                        "orderStatus",
+                                        "status"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "selectOrderStatusByTrackerInputCursor",
+                                        "LOCATION"
+                                    ],
+                                    "to": [
+                                        "orderStatus",
+                                        "location"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "selectOrderStatusByTrackerInputCursor",
+                                        "NOTES"
+                                    ],
+                                    "to": [
+                                        "orderStatus",
+                                        "notes"
+                                    ]
+                                },
+                                {
+                                    "from": [
+                                        "selectOrderStatusByTrackerInputCursor",
+                                        "DATE"
+                                    ],
+                                    "to": [
+                                        "orderStatus",
+                                        "date"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "catch": [
+                {
+                    "lines": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "message"
+                            ],
+                            "to": [
+                                "APIException",
+                                "message"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "APIException",
+                                "payload"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "500",
+                            "to": [
+                                "responseCode"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "invokeCode",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "error",
+                    "parameters": [
+                        "java.lang.String",
+                        "java.lang.Throwable"
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "message"
+                            ],
+                            "to": [
+                                "message"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "throwable"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

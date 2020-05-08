@@ -1,0 +1,201 @@
+{
+    "input": [
+        {
+            "name": "orderTracker",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "order"
+                },
+                {
+                    "name": "ship_to"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "APIException",
+            "type": "model",
+            "reference": "io.toro.martini.api.APIException"
+        },
+        {
+            "name": "response",
+            "type": "model",
+            "reference": "model.OrderTracker"
+        },
+        {
+            "name": "responseCode",
+            "type": "integer",
+            "defaultValue": 200
+        }
+    ],
+    "steps": [
+        {
+            "type": "block",
+            "blockType": "TRY_CATCH",
+            "children": [
+                {
+                    "lines": [
+                        {
+                            "type": "set",
+                            "expression": "UUID.randomUUID()",
+                            "evaluate": true,
+                            "to": [
+                                "response",
+                                "tracker_id"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "invokeGloop",
+                    "name": "sql.orderTracker.InsertOrderTracker",
+                    "inputs": [
+                        {
+                            "from": [
+                                "orderTracker",
+                                "order"
+                            ],
+                            "to": [
+                                "insertOrderTrackerInput",
+                                "order"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "orderTracker",
+                                "ship_to"
+                            ],
+                            "to": [
+                                "insertOrderTrackerInput",
+                                "shipTo"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "response",
+                                "tracker_id"
+                            ],
+                            "to": [
+                                "insertOrderTrackerInput",
+                                "trackerId"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "now",
+                            "to": [
+                                "insertOrderTrackerInput",
+                                "orderDate"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "invokeGloop",
+                    "name": "services.orderTracker.GetOrderTracker",
+                    "inputs": [
+                        {
+                            "from": [
+                                "response",
+                                "tracker_id"
+                            ],
+                            "to": [
+                                "trackerId"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "from": [
+                                "orderTracker"
+                            ],
+                            "to": [
+                                "response"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "APIException"
+                            ],
+                            "to": [
+                                "APIException"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "responseCode"
+                            ],
+                            "to": [
+                                "responseCode"
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "catch": [
+                {
+                    "lines": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "message"
+                            ],
+                            "to": [
+                                "APIException",
+                                "message"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "APIException",
+                                "payload"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "500",
+                            "to": [
+                                "responseCode"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "invokeCode",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "error",
+                    "parameters": [
+                        "java.lang.String",
+                        "java.lang.Throwable"
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "message"
+                            ],
+                            "to": [
+                                "message"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "throwable"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

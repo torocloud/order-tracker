@@ -1,0 +1,270 @@
+{
+    "steps": [
+        {
+            "type": "block",
+            "blockType": "TRY_CATCH",
+            "children": [
+                {
+                    "type": "fork",
+                    "expression": "'database.type'.getPackageProperty().equalsIgnoreCase( 'oracle' )",
+                    "children": [
+                        {
+                            "type": "invokeCode",
+                            "label": "true",
+                            "className": "io.toro.martini.GloopMethods",
+                            "methodName": "setSystemProperty",
+                            "parameters": [
+                                "java.lang.String",
+                                "java.lang.String"
+                            ],
+                            "inputs": [
+                                {
+                                    "type": "set",
+                                    "expression": "oracle.jdbc.J2EE13Compliant",
+                                    "to": [
+                                        "name"
+                                    ]
+                                },
+                                {
+                                    "type": "set",
+                                    "expression": "true",
+                                    "to": [
+                                        "value"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "invokeCode",
+                    "declare": [
+                        {
+                            "variables": [
+                                {
+                                    "name": "connectionPoolExists",
+                                    "type": "boolean",
+                                    "allowNull": false
+                                },
+                                {
+                                    "name": "dateType",
+                                    "comments": "change the datetype to DATETIME if using mssql"
+                                }
+                            ]
+                        }
+                    ],
+                    "className": "io.toro.martini.DatabaseConnectionPoolMethods",
+                    "methodName": "containsConnectionWithName",
+                    "parameters": [
+                        "java.lang.String"
+                    ],
+                    "inputs": [
+                        {
+                            "type": "set",
+                            "expression": "order-tracker",
+                            "to": [
+                                "name"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "from": [
+                                "output"
+                            ],
+                            "to": [
+                                "connectionPoolExists"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "'database.type'.getPackageProperty().equalsIgnoreCase( 'mssql' ) ? 'DATETIME' : 'TIMESTAMP'",
+                            "evaluate": true,
+                            "to": [
+                                "dateType"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "fork",
+                    "expression": "connectionPoolExists",
+                    "children": [
+                        {
+                            "type": "block",
+                            "label": "false",
+                            "children": [
+                                {
+                                    "declare": [
+                                        {
+                                            "variables": [
+                                                {
+                                                    "name": "database"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "lines": [
+                                        {
+                                            "type": "set",
+                                            "expression": "'database.type'.getPackageProperty( 'hsql' )",
+                                            "evaluate": true,
+                                            "to": [
+                                                "database"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "invokeCode",
+                                    "comments": "Create the database connection pool. Depending on the value set on the database property from the package properties, it will create a connection pool for HSQL or MYSQL",
+                                    "className": "io.toro.martini.DatabaseConnectionPoolMethods",
+                                    "methodName": "savePool",
+                                    "parameters": [
+                                        "io.toro.gloop.object.property.GloopModel"
+                                    ],
+                                    "inputs": [
+                                        {
+                                            "type": "set",
+                                            "expression": "order-tracker",
+                                            "to": [
+                                                "connectionPoolInfo",
+                                                "name"
+                                            ]
+                                        },
+                                        {
+                                            "type": "set",
+                                            "expression": "true",
+                                            "to": [
+                                                "connectionPoolInfo",
+                                                "enabled"
+                                            ]
+                                        },
+                                        {
+                                            "type": "set",
+                                            "expression": "false",
+                                            "to": [
+                                                "connectionPoolInfo",
+                                                "xa"
+                                            ]
+                                        },
+                                        {
+                                            "type": "set",
+                                            "expression": "//org.hsqldb.jdbc.JDBCDriver\n\"${database}.driver\".getPackageProperty()",
+                                            "evaluate": true,
+                                            "to": [
+                                                "connectionPoolInfo",
+                                                "driverClass"
+                                            ]
+                                        },
+                                        {
+                                            "type": "set",
+                                            "expression": "//jdbc:hsqldb:file:${toroesb.home}data/hsql/mock_inventory_api.db;hsqldb.tx=MVCC;sql.syntax_mys=true\n\"${database}.connection.url\".getPackageProperty()",
+                                            "evaluate": true,
+                                            "to": [
+                                                "connectionPoolInfo",
+                                                "url"
+                                            ]
+                                        },
+                                        {
+                                            "type": "set",
+                                            "expression": "//sa\n\"${database}.username\".getPackageProperty()",
+                                            "evaluate": true,
+                                            "to": [
+                                                "connectionPoolInfo",
+                                                "username"
+                                            ]
+                                        },
+                                        {
+                                            "type": "set",
+                                            "expression": "\"${database}.password\".getPackageProperty()",
+                                            "evaluate": true,
+                                            "to": [
+                                                "connectionPoolInfo",
+                                                "password"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "invokeCode",
+                                    "className": "io.toro.martini.DatabaseConnectionPoolMethods",
+                                    "methodName": "startPool",
+                                    "parameters": [
+                                        "java.lang.String"
+                                    ],
+                                    "inputs": [
+                                        {
+                                            "type": "set",
+                                            "expression": "order-tracker",
+                                            "to": [
+                                                "name"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "invokeCode",
+                    "className": "io.toro.martini.SqlMethods",
+                    "methodName": "sql",
+                    "parameters": [
+                        "java.lang.String",
+                        "groovy.lang.Closure"
+                    ],
+                    "inputs": [
+                        {
+                            "type": "set",
+                            "expression": "order-tracker",
+                            "to": [
+                                "poolName"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "{\n\tsql ->\n\t\tsql.execute \"\"\"\n\t\t\tCREATE TABLE \"ORDER_TRACKER\" (\n\t\t\t\t\"TRACKER_ID\" VARCHAR(36) NOT NULL PRIMARY KEY,\n\t\t\t\t\"ORDER\" VARCHAR(100),\n\t\t\t\t\"SHIP_TO\" VARCHAR(500),\n\t\t\t\t\"ORDER_DATE\" $dateType NOT NULL\n\t\t\t)\n\n\t\t\tCREATE TABLE \"ORDER_STATUS\" (\n\t\t\t\t\"STATUS_ID\" VARCHAR(36) NOT NULL PRIMARY KEY,\n\t\t\t\t\"TRACKER_ID\" VARCHAR(36) NOT NULL,\n\t\t\t\t\"STATUS\" VARCHAR(100) NOT NULL,\n\t\t\t\t\"LOCATION\" VARCHAR(500),\n\t\t\t\t\"NOTES\" VARCHAR(255),\n\t\t\t\t\"DATE\" $dateType NOT NULL,\n\t\t\t\tFOREIGN KEY (\"TRACKER_ID\") REFERENCES \"ORDER_TRACKER\" (\"TRACKER_ID\") ON DELETE CASCADE ON UPDATE CASCADE\n\t\t\t)\"\"\".toString()\n}",
+                            "evaluate": true,
+                            "to": [
+                                "c"
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "catch": [
+                {
+                    "type": "invokeCode",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "error",
+                    "parameters": [
+                        "java.lang.String",
+                        "java.lang.Throwable"
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "throwable"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "gloopStackTrace"
+                            ],
+                            "to": [
+                                "message"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

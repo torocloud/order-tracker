@@ -1,0 +1,180 @@
+{
+    "input": [
+        {
+            "name": "trackerId",
+            "required": true,
+            "allowNull": false
+        }
+    ],
+    "output": [
+        {
+            "name": "orderTracker",
+            "type": "model",
+            "reference": "model.OrderTracker"
+        },
+        {
+            "name": "APIException",
+            "type": "model",
+            "reference": "io.toro.martini.api.APIException"
+        },
+        {
+            "name": "responseCode",
+            "type": "integer",
+            "defaultValue": 200
+        }
+    ],
+    "steps": [
+        {
+            "type": "block",
+            "blockType": "TRY_CATCH",
+            "children": [
+                {
+                    "type": "invokeGloop",
+                    "name": "sql.orderTracker.SelectOrderTracker",
+                    "inputs": [
+                        {
+                            "from": [
+                                "trackerId"
+                            ],
+                            "to": [
+                                "selectOrderTrackerInput",
+                                "trackerId"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "from": [
+                                "selectOrderTrackerOutput",
+                                "TRACKER_ID"
+                            ],
+                            "to": [
+                                "orderTracker",
+                                "tracker_id"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "selectOrderTrackerOutput",
+                                "ORDER"
+                            ],
+                            "to": [
+                                "orderTracker",
+                                "order"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "selectOrderTrackerOutput",
+                                "SHIP_TO"
+                            ],
+                            "to": [
+                                "orderTracker",
+                                "ship_to"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "selectOrderTrackerOutput",
+                                "ORDER_DATE"
+                            ],
+                            "to": [
+                                "orderTracker",
+                                "order_date"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "fork",
+                    "expression": "orderTracker?.tracker_id",
+                    "children": [
+                        {
+                            "label": "$null",
+                            "lines": [
+                                {
+                                    "type": "set",
+                                    "expression": "400",
+                                    "to": [
+                                        "responseCode"
+                                    ]
+                                },
+                                {
+                                    "type": "set",
+                                    "expression": "\"Order tracker with id ${trackerId} not found.\"",
+                                    "evaluate": true,
+                                    "to": [
+                                        "APIException",
+                                        "message"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "catch": [
+                {
+                    "lines": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "APIException",
+                                "payload"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "message"
+                            ],
+                            "to": [
+                                "APIException",
+                                "message"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "500",
+                            "to": [
+                                "responseCode"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "invokeCode",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "error",
+                    "parameters": [
+                        "java.lang.String",
+                        "java.lang.Throwable"
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "message"
+                            ],
+                            "to": [
+                                "message"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "throwable"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

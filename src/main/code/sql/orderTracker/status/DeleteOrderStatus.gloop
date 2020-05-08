@@ -1,0 +1,29 @@
+{
+    "type": "customSql",
+    "input": [
+        {
+            "name": "deleteOrderStatusInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "statusId"
+                },
+                {
+                    "name": "trackerId"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "updateCount",
+            "type": "integer"
+        }
+    ],
+    "connectionPoolName": "order-tracker",
+    "sqlType": "DELETE",
+    "query": "DELETE FROM \"ORDER_STATUS\"\nWHERE (\n    \"STATUS_ID\" = :statusId\n    AND\n    \"TRACKER_ID\" = :trackerId\n)"
+}

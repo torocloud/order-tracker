@@ -1,0 +1,309 @@
+{
+    "input": [
+        {
+            "name": "orderStatus",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "status_id"
+                },
+                {
+                    "name": "status"
+                },
+                {
+                    "name": "location"
+                },
+                {
+                    "name": "notes"
+                }
+            ]
+        },
+        {
+            "name": "trackerId"
+        }
+    ],
+    "output": [
+        {
+            "name": "APIException",
+            "type": "model",
+            "reference": "io.toro.martini.api.APIException"
+        },
+        {
+            "name": "responseCode",
+            "type": "integer",
+            "defaultValue": 200
+        },
+        {
+            "name": "response",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "status"
+                }
+            ]
+        }
+    ],
+    "steps": [
+        {
+            "type": "block",
+            "blockType": "TRY_CATCH",
+            "children": [
+                {
+                    "type": "invokeGloop",
+                    "name": "services.orderTracker.status.GetOrderStatus",
+                    "declare": [
+                        {
+                            "variables": [
+                                {
+                                    "name": "exists",
+                                    "type": "boolean"
+                                }
+                            ]
+                        }
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "orderStatus",
+                                "status_id"
+                            ],
+                            "to": [
+                                "statusId"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "trackerId"
+                            ],
+                            "to": [
+                                "trackerId"
+                            ]
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "from": [
+                                "responseCode"
+                            ],
+                            "to": [
+                                "responseCode"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "APIException"
+                            ],
+                            "to": [
+                                "APIException"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "responseCode == 200",
+                            "evaluate": true,
+                            "to": [
+                                "exists"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "fork",
+                    "expression": "exists",
+                    "children": [
+                        {
+                            "type": "block",
+                            "label": "true",
+                            "children": [
+                                {
+                                    "type": "invokeGloop",
+                                    "name": "sql.orderTracker.status.UpdateOrderStatus",
+                                    "declare": [
+                                        {
+                                            "variables": [
+                                                {
+                                                    "name": "updateCount",
+                                                    "type": "integer"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "inputs": [
+                                        {
+                                            "from": [
+                                                "orderStatus",
+                                                "status_id"
+                                            ],
+                                            "to": [
+                                                "updateOrderStatusInput",
+                                                "statusId"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "orderStatus",
+                                                "status"
+                                            ],
+                                            "to": [
+                                                "updateOrderStatusInput",
+                                                "status"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "orderStatus",
+                                                "location"
+                                            ],
+                                            "to": [
+                                                "updateOrderStatusInput",
+                                                "location"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "orderStatus",
+                                                "notes"
+                                            ],
+                                            "to": [
+                                                "updateOrderStatusInput",
+                                                "notes"
+                                            ]
+                                        },
+                                        {
+                                            "from": [
+                                                "trackerId"
+                                            ],
+                                            "to": [
+                                                "updateOrderStatusInput",
+                                                "trackerId"
+                                            ]
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "from": [
+                                                "updateCount"
+                                            ],
+                                            "to": [
+                                                "updateCount"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "fork",
+                                    "expression": "updateCount > 0",
+                                    "children": [
+                                        {
+                                            "label": "true",
+                                            "lines": [
+                                                {
+                                                    "type": "set",
+                                                    "expression": "200",
+                                                    "to": [
+                                                        "responseCode"
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "set",
+                                                    "expression": "Successfully updated order status",
+                                                    "to": [
+                                                        "response",
+                                                        "status"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "label": "false",
+                                            "lines": [
+                                                {
+                                                    "type": "set",
+                                                    "expression": "400",
+                                                    "to": [
+                                                        "responseCode"
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "set",
+                                                    "expression": "\"There was no changes applied to the order status with id ${orderStatus.status_id}\"",
+                                                    "evaluate": true,
+                                                    "to": [
+                                                        "APIException",
+                                                        "message"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "catch": [
+                {
+                    "lines": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "message"
+                            ],
+                            "to": [
+                                "APIException",
+                                "message"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "APIException",
+                                "payload"
+                            ]
+                        },
+                        {
+                            "type": "set",
+                            "expression": "500",
+                            "to": [
+                                "responseCode"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "invokeCode",
+                    "className": "io.toro.martini.LoggerMethods",
+                    "methodName": "error",
+                    "parameters": [
+                        "java.lang.String",
+                        "java.lang.Throwable"
+                    ],
+                    "inputs": [
+                        {
+                            "from": [
+                                "$gloopException",
+                                "message"
+                            ],
+                            "to": [
+                                "message"
+                            ]
+                        },
+                        {
+                            "from": [
+                                "$gloopException",
+                                "realException"
+                            ],
+                            "to": [
+                                "throwable"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

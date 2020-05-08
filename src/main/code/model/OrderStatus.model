@@ -1,0 +1,25 @@
+{
+    "name": "OrderStatus",
+    "type": "model",
+    "gloopProperties": [
+        {
+            "name": "status_id"
+        },
+        {
+            "name": "tracker_id"
+        },
+        {
+            "name": "status"
+        },
+        {
+            "name": "location"
+        },
+        {
+            "name": "notes"
+        },
+        {
+            "name": "date",
+            "type": "date"
+        }
+    ]
+}

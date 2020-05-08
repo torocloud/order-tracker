@@ -1,0 +1,293 @@
+{
+    "info": {
+        "version": "1.0.0-SNAPSHOT"
+    },
+    "basePath": "/order-tracker",
+    "paths": {
+        "/tracker": {
+            "description": "Adds a new order tracker or updates an existing order tracker",
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "bodyParameter": {
+                    "name": "orderTracker",
+                    "description": "orderTracker"
+                },
+                "responses": {
+                    "200": {
+                        "body": "response",
+                        "description": "Successfully added order tracker"
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "Failed to add order tracker"
+                    },
+                    "404": {
+                        "body": "APIException",
+                        "description": "Order tracker with given id not found"
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "services.orderTracker.UpdateOrderTracker",
+                "responseCodeField": "responseCode"
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "bodyParameter": {
+                    "name": "orderTracker",
+                    "description": "orderTracker"
+                },
+                "responses": {
+                    "200": {
+                        "body": "response",
+                        "description": "Successfully added order tracker"
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "Failed to add order tracker"
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "services.orderTracker.AddOrderTracker",
+                "responseCodeField": "responseCode"
+            }
+        },
+        "/tracker/{trackerId}": {
+            "description": "Retrieves or deletes an existing order tracker",
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "trackerId",
+                        "type": "PATH"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "body": "orderTracker",
+                        "description": "Successfully added order tracker"
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "Failed to add order tracker"
+                    },
+                    "400": {
+                        "body": "APIException",
+                        "description": "No given id"
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "services.orderTracker.GetOrderTracker",
+                "responseCodeField": "responseCode"
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "trackerId",
+                        "type": "PATH"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "body": "response",
+                        "description": "Successfully added order tracker"
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "Failed to add order tracker"
+                    },
+                    "400": {
+                        "body": "APIException",
+                        "description": "No given id"
+                    },
+                    "404": {
+                        "body": "APIException",
+                        "description": "Order tracker with given id not found"
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "services.orderTracker.DeleteOrderTracker",
+                "responseCodeField": "responseCode"
+            }
+        },
+        "/tracker/{trackerId}/status": {
+            "description": "Adds a new tracker status, updates an existing tracker status, or retrieve all tracker statuses by trackerId",
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "trackerId",
+                        "type": "PATH"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "body": "orderStatus",
+                        "description": "Get all order status by trackerId"
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "Failed to get order status"
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "services.orderTracker.status.GetOrderStatusbyTracker",
+                "responseCodeField": "responseCode"
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "trackerId",
+                        "type": "PATH"
+                    }
+                ],
+                "bodyParameter": {
+                    "name": "orderStatus",
+                    "description": "orderStatus"
+                },
+                "responses": {
+                    "200": {
+                        "body": "response",
+                        "description": "Successfully added order status"
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "Failed to add order status"
+                    },
+                    "400": {
+                        "body": "APIException",
+                        "description": "No given id"
+                    },
+                    "404": {
+                        "body": "APIException",
+                        "description": "Order status with given id not found"
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "services.orderTracker.status.UpdateOrderStatus",
+                "responseCodeField": "responseCode"
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "trackerId",
+                        "type": "PATH"
+                    }
+                ],
+                "bodyParameter": {
+                    "name": "orderStatus",
+                    "description": "orderStatus"
+                },
+                "responses": {
+                    "200": {
+                        "body": "response",
+                        "description": "Successfully added order status"
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "Failed to add order status"
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "services.orderTracker.status.AddOrderStatus",
+                "responseCodeField": "responseCode"
+            }
+        },
+        "/tracker/{trackerId}/status/{statusId}": {
+            "description": "Retrieves or deletes a specific tracker status",
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "trackerId",
+                        "type": "PATH"
+                    },
+                    {
+                        "name": "statusId",
+                        "type": "PATH"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "body": "orderStatus",
+                        "description": "Successfully added order tracker"
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "Failed to add order tracker"
+                    },
+                    "404": {
+                        "body": "APIException",
+                        "description": "Not found"
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "services.orderTracker.status.GetOrderStatus",
+                "responseCodeField": "responseCode"
+            },
+            "delete": {
+                "parameters": [
+                    {
+                        "name": "trackerId",
+                        "type": "PATH"
+                    },
+                    {
+                        "name": "statusId",
+                        "type": "PATH"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "body": "response",
+                        "description": "Successfully deleted order status"
+                    },
+                    "500": {
+                        "body": "APIException",
+                        "description": "Failed to delete order status"
+                    },
+                    "400": {
+                        "body": "APIException",
+                        "description": "No given id"
+                    },
+                    "404": {
+                        "body": "APIException",
+                        "description": "Order status with given id not found"
+                    }
+                },
+                "operationType": "gloop",
+                "operationLocation": "services.orderTracker.status.DeleteOrderStatus",
+                "responseCodeField": "responseCode"
+            }
+        }
+    }
+}

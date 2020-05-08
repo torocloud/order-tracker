@@ -1,0 +1,60 @@
+{
+    "type": "customSql",
+    "input": [
+        {
+            "name": "selectOrderStatusInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "statusId"
+                },
+                {
+                    "name": "trackerId"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "selectOrderStatusOutput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "STATUS_ID",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "TRACKER_ID",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "STATUS",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "LOCATION",
+                    "required": true
+                },
+                {
+                    "name": "NOTES",
+                    "required": true
+                },
+                {
+                    "name": "DATE",
+                    "type": "date",
+                    "required": true,
+                    "allowNull": false
+                }
+            ]
+        }
+    ],
+    "connectionPoolName": "order-tracker",
+    "sqlType": "SELECT_SINGLE",
+    "query": "SELECT \n\t\"STATUS_ID\",\n\t\"TRACKER_ID\",\n\t\"STATUS\",\n\t\"LOCATION\",\n\t\"NOTES\",\n\t\"DATE\"\nFROM\n    \"ORDER_STATUS\"\nWHERE (\n    \"STATUS_ID\" = :statusId\n    AND\n    \"TRACKER_ID\" = :trackerId\n)"
+}

@@ -1,0 +1,46 @@
+{
+    "type": "customSql",
+    "input": [
+        {
+            "name": "insertOrderTrackerInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "$getGeneratedKeys",
+                    "type": "boolean",
+                    "defaultValue": false
+                },
+                {
+                    "name": "trackerId"
+                },
+                {
+                    "name": "order"
+                },
+                {
+                    "name": "shipTo"
+                },
+                {
+                    "name": "orderDate",
+                    "type": "date"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "updateCount",
+            "type": "integer"
+        },
+        {
+            "name": "generatedKeys",
+            "type": "model",
+            "allowExtraProperties": true
+        }
+    ],
+    "connectionPoolName": "order-tracker",
+    "sqlType": "INSERT",
+    "query": "INSERT INTO \"ORDER_TRACKER\" (\n    \"TRACKER_ID\",\n    \"ORDER\",\n    \"SHIP_TO\",\n    \"ORDER_DATE\"\n)\nVALUES (\n    :trackerId,\n    :order,\n    :shipTo,\n    :orderDate\n)"
+}

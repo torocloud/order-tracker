@@ -1,0 +1,19 @@
+{
+    "name": "OrderTracker",
+    "type": "model",
+    "gloopProperties": [
+        {
+            "name": "tracker_id"
+        },
+        {
+            "name": "order"
+        },
+        {
+            "name": "ship_to"
+        },
+        {
+            "name": "order_date",
+            "type": "date"
+        }
+    ]
+}

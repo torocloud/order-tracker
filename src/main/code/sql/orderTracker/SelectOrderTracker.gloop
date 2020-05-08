@@ -1,0 +1,47 @@
+{
+    "type": "customSql",
+    "input": [
+        {
+            "name": "selectOrderTrackerInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "trackerId"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "selectOrderTrackerOutput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "TRACKER_ID",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "ORDER",
+                    "required": true
+                },
+                {
+                    "name": "SHIP_TO",
+                    "required": true
+                },
+                {
+                    "name": "ORDER_DATE",
+                    "type": "date",
+                    "required": true,
+                    "allowNull": false
+                }
+            ]
+        }
+    ],
+    "connectionPoolName": "order-tracker",
+    "sqlType": "SELECT_SINGLE",
+    "query": "SELECT \n\t\"TRACKER_ID\",\n\t\"ORDER\",\n\t\"SHIP_TO\",\n\t\"ORDER_DATE\"\nFROM\n    \"ORDER_TRACKER\"\nWHERE (\n    \"TRACKER_ID\" = :trackerId\n)"
+}

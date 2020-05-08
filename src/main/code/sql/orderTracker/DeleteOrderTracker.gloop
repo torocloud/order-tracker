@@ -1,0 +1,26 @@
+{
+    "type": "customSql",
+    "input": [
+        {
+            "name": "deleteOrderTrackerInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "trackerId"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "updateCount",
+            "type": "integer"
+        }
+    ],
+    "connectionPoolName": "order-tracker",
+    "sqlType": "DELETE",
+    "query": "DELETE FROM \"ORDER_TRACKER\"\nWHERE (\n    \"TRACKER_ID\" = :trackerId\n)"
+}

@@ -1,0 +1,38 @@
+{
+    "type": "customSql",
+    "input": [
+        {
+            "name": "updateOrderStatusInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "trackerId"
+                },
+                {
+                    "name": "status"
+                },
+                {
+                    "name": "location"
+                },
+                {
+                    "name": "notes"
+                },
+                {
+                    "name": "statusId"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "updateCount",
+            "type": "integer"
+        }
+    ],
+    "connectionPoolName": "order-tracker",
+    "sqlType": "UPDATE",
+    "query": "UPDATE \"ORDER_STATUS\"\nSET\n    \"TRACKER_ID\" = COALESCE(:trackerId, \"TRACKER_ID\"),\n    \"STATUS\" = COALESCE(:status, \"STATUS\"),\n    \"LOCATION\" = COALESCE(:location, \"LOCATION\"),\n    \"NOTES\" = COALESCE(:notes, \"NOTES\")\nWHERE (\n    \"STATUS_ID\" = :statusId\n)"
+}

@@ -1,0 +1,62 @@
+{
+    "type": "customSql",
+    "input": [
+        {
+            "name": "selectOrderStatusByTrackerInput",
+            "type": "model",
+            "gloopProperties": [
+                {
+                    "name": "$martiniConnectionPool"
+                },
+                {
+                    "name": "$limit",
+                    "type": "integer"
+                },
+                {
+                    "name": "trackerId"
+                }
+            ]
+        }
+    ],
+    "output": [
+        {
+            "name": "selectOrderStatusByTrackerInputCursor",
+            "type": "model",
+            "array": true,
+            "gloopProperties": [
+                {
+                    "name": "STATUS_ID",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "TRACKER_ID",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "STATUS",
+                    "required": true,
+                    "allowNull": false
+                },
+                {
+                    "name": "LOCATION",
+                    "required": true
+                },
+                {
+                    "name": "NOTES",
+                    "required": true
+                },
+                {
+                    "name": "DATE",
+                    "type": "date",
+                    "required": true,
+                    "allowNull": false
+                }
+            ]
+        }
+    ],
+    "connectionPoolName": "order-tracker",
+    "sqlType": "SELECT_MULTI",
+    "query": "SELECT \n\t\"ORDER_STATUS\".\"STATUS_ID\",\n\t\"ORDER_STATUS\".\"TRACKER_ID\",\n\t\"ORDER_STATUS\".\"STATUS\",\n\t\"ORDER_STATUS\".\"LOCATION\",\n\t\"ORDER_STATUS\".\"NOTES\",\n\t\"ORDER_STATUS\".\"DATE\"\nFROM\n    \"ORDER_STATUS\"\nINNER JOIN\n\t\"ORDER_TRACKER\"\n\t\tON\n\t\t\t\"ORDER_TRACKER\".\"TRACKER_ID\" = \"ORDER_STATUS\".\"TRACKER_ID\"\nWHERE (\n    \"ORDER_TRACKER\".\"TRACKER_ID\" = :trackerId\n)\nORDER BY \"ORDER_STATUS\".\"DATE\" DESC"
+}
